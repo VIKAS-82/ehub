@@ -7,13 +7,16 @@ const methodOverride = require('method-override');
 const mysql = require('mysql2');
 const session = require('express-session');
 
-// ✅ Railway MySQL connection (using env variables)
+// ✅ Railway MySQL connection with SSL
 const db = mysql.createConnection({
     host: process.env.MYSQLHOST,
     user: process.env.MYSQLUSER,
     password: process.env.MYSQLPASSWORD,
     database: process.env.MYSQLDATABASE,
-    port: process.env.MYSQLPORT
+    port: process.env.MYSQLPORT,
+    ssl: {
+        rejectUnauthorized: true
+    }
 });
 
 // ✅ DB connection check
@@ -43,20 +46,29 @@ app.set('view engine', 'ejs');
 
 // ================= ROUTES =================
 
+// 🔐 Login page
 app.get('/', (req, res) => {
     const showError = req.query.error === '1';
     res.render('login', { showError });
 });
 
+// 🔐 Login
 app.post('/', (req, res) => {
     const { email, password } = req.body;
 
     db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.send("Database error");
+        }
+
+        if (results.length === 0) {
+            return res.redirect('/?error=1');
+        }
 
         const user = results[0];
 
-        if (user && user.password_hash === password) {
+        if (user.password_hash === password) {
             req.session.userId = user.id;
             res.redirect('/home');
         } else {
@@ -65,6 +77,7 @@ app.post('/', (req, res) => {
     });
 });
 
+// 🔐 Signup
 app.get('/signup', (req, res) => {
     res.render('signup');
 });
@@ -80,20 +93,30 @@ app.post('/signup', (req, res) => {
                 if (err.code === 'ER_DUP_ENTRY') {
                     return res.render('signup', { error: 'Email already in use' });
                 }
-                throw err;
+                console.error(err);
+                return res.send("Database error");
             }
             res.redirect('/');
         }
     );
 });
 
+// 🔐 Protected home
 app.get('/home', (req, res) => {
+    if (!req.session.userId) {
+        return res.redirect('/');
+    }
+
     db.query('SELECT * FROM events', (err, results) => {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.send("Error loading events");
+        }
         res.render('home', { event: results });
     });
 });
 
+// 🔐 Logout
 app.get('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) return res.send('Error logging out');
@@ -101,6 +124,7 @@ app.get('/logout', (req, res) => {
     });
 });
 
+// 🎟 Booking
 app.get('/book/:eid', (req, res) => {
     const eventid = req.params.eid;
     res.render('book_ticket', { eventid });
@@ -110,13 +134,15 @@ app.patch('/book/:eid', (req, res) => {
     const eventid = req.params.eid;
     const { tier, quantity } = req.body;
     const qty = parseInt(quantity);
-    const userId = req.session.userId;
 
     db.query(
         'SELECT title, available_seats, tier1_price, tier2_price, tier3_price FROM events WHERE id = ?',
         [eventid],
         (err, results) => {
-            if (err) throw err;
+            if (err) {
+                console.error(err);
+                return res.send("Database error");
+            }
 
             const event = results[0];
             const available = event.available_seats;
@@ -146,12 +172,16 @@ app.patch('/book/:eid', (req, res) => {
     );
 });
 
+// 💳 Payment
 app.post('/pay', (req, res) => {
-    const { eventid, tier, qty, totalprice } = req.body;
+    const { eventid, qty, totalprice } = req.body;
     const userId = req.session.userId;
 
     db.query('SELECT available_seats FROM events WHERE id = ?', [eventid], (err, results) => {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.send("Database error");
+        }
 
         const available = results[0].available_seats;
         const quantity = parseInt(qty);
@@ -161,13 +191,19 @@ app.post('/pay', (req, res) => {
             'UPDATE events SET available_seats = ? WHERE id = ?',
             [updatedSeats, eventid],
             (err) => {
-                if (err) throw err;
+                if (err) {
+                    console.error(err);
+                    return res.send("Database error");
+                }
 
                 db.query(
                     'INSERT INTO bookings (user_id, event_id, num_tickets, total_price) VALUES (?,?,?,?)',
                     [userId, eventid, quantity, totalprice],
                     err => {
-                        if (err) throw err;
+                        if (err) {
+                            console.error(err);
+                            return res.send("Database error");
+                        }
                         res.redirect('/confirm');
                     }
                 );
@@ -176,6 +212,7 @@ app.post('/pay', (req, res) => {
     });
 });
 
+// 🎫 My tickets
 app.get('/mytickets', (req, res) => {
     const userId = req.session.userId;
 
@@ -187,7 +224,10 @@ app.get('/mytickets', (req, res) => {
     `;
 
     db.query(query, [userId], (err, results) => {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.send("Database error");
+        }
         res.render('mytickets', { tickets: results });
     });
 });
@@ -196,7 +236,7 @@ app.get('/confirm', (req, res) => {
     res.render('confirm');
 });
 
-// ================= HOST ROUTES =================
+// ================= HOST =================
 
 app.get('/host', (req, res) => {
     const showError = req.query.error === '1';
@@ -207,11 +247,18 @@ app.post('/host', (req, res) => {
     const { email, password } = req.body;
 
     db.query('SELECT * FROM organizers WHERE email = ?', [email], (err, results) => {
-        if (err) throw err;
+        if (err) {
+            console.error(err);
+            return res.send("Database error");
+        }
+
+        if (results.length === 0) {
+            return res.redirect('/host?error=1');
+        }
 
         const user = results[0];
 
-        if (user && user.password_hash === password) {
+        if (user.password_hash === password) {
             req.session.userId = user.id;
             res.redirect('/host_home');
         } else {
@@ -220,88 +267,8 @@ app.post('/host', (req, res) => {
     });
 });
 
-app.get('/host_signup', (req, res) => {
-    res.render('host_signup');
-});
+// ================= FINAL PORT =================
 
-app.post('/host_signup', (req, res) => {
-    const { name, email, password } = req.body;
-
-    db.query(
-        'INSERT INTO organizers (name, email, password_hash) VALUES (?, ?, ?)',
-        [name, email, password],
-        err => {
-            if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.render('host_signup', { error: 'Email already in use' });
-                }
-                throw err;
-            }
-            res.redirect('/host');
-        }
-    );
-});
-
-app.get('/host_home', (req, res) => {
-    const userId = req.session.userId;
-
-    db.query('SELECT * FROM events WHERE organizer_id = ?', [userId], (err, results) => {
-        if (err) throw err;
-        res.render('host_home', { events: results });
-    });
-});
-
-app.get('/host_create', (req, res) => {
-    res.render('host_create');
-});
-
-app.post('/host_create', (req, res) => {
-    const organizer_id = req.session.userId;
-
-    const {
-        title, description, date, time,
-        location, total_seats,
-        tier1_price, tier2_price, tier3_price
-    } = req.body;
-
-    if (!title || !description || !date || !time || !location || !total_seats) {
-        return res.render('host_create', { error: 'Enter values in all fields' });
-    }
-
-    const available_seats = total_seats;
-
-    const query = `
-        INSERT INTO events (
-            organizer_id, title, description, date, time, location,
-            total_seats, available_seats, tier1_price, tier2_price, tier3_price
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    const values = [
-        organizer_id, title, description, date, time, location,
-        total_seats, available_seats, tier1_price, tier2_price, tier3_price
-    ];
-
-    db.query(query, values, (err) => {
-        if (err) {
-            console.error(err);
-            return res.render('host_create', { error: 'Database error. Try again.' });
-        }
-        res.redirect('/host_home');
-    });
-});
-
-app.delete('/delete/:eid', (req, res) => {
-    const { eid } = req.params;
-
-    db.query("DELETE FROM events WHERE id = ?", [eid], (err) => {
-        if (err) throw err;
-        res.redirect('/host_home');
-    });
-});
-
-// ✅ FINAL FIX (PORT for Render)
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
