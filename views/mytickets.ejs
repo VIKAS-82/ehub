@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tickets</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #f9f9f9, #e6f0ff);
+            margin: 0;
+            padding: 30px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        li {
+            background-color: #ffffff;
+            margin-bottom: 20px;
+            padding: 20px 25px;
+            border-left: 6px solid #3498db;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        li:hover {
+            transform: scale(1.02);
+        }
+
+        li strong {
+            color: #1a237e;
+            font-size: 18px;
+        }
+
+        li span {
+            display: block;
+            margin-top: 5px;
+            color: #555;
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎟️ My Tickets</h1>
+    <ul>
+        <% for(let t of tickets){ %>
+            <li>
+                <strong><%= t.title %></strong>
+                <span>🆔 Ticket Id: <%= t.id %></span>
+                <span>⏰ Booking Time: <%= t.booking_time %></span>
+                <span>🎫 Tickets: <%= t.num_tickets %></span>
+                <span class="highlight">💰 Total: ₹<%= t.total_price %></span>
+            </li>
+        <% } %>
+    </ul>
+    <a href="/home">⬅️ Return to Home Page</a>
+</body>
+</html>

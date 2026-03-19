@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Event</title>
+    <style>
+        /* Resetting default styles */
+        body, h1, form, label, input, textarea, button {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Body styling */
+        body {
+            background-image: url('images/grey_bgpic_dbms.jpg');
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            text-align: center;
+        }
+
+        /* Heading styling */
+        h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        /* Form container styling */
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Label styling */
+        label {
+            text-align: left;
+            font-size: 1rem;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        /* Input and textarea styling */
+        input, textarea {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Textarea specific styling */
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        /* Button styling */
+        button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+
+        /* Error message styling */
+        p {
+            color: red;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Host an Event</h1>
+
+    <!-- Event creation form -->
+    <form method="post" action="/host_create">
+        <label for="title">Event Title</label>
+        <input type="text" name="title" id="title" required>
+
+        <label for="description">Description</label>
+        <textarea name="description" id="description" required></textarea>
+
+        <label for="date">Date</label>
+        <input type="date" name="date" id="date" required>
+
+        <label for="time">Time</label>
+        <input type="time" name="time" id="time" required>
+
+        <label for="location">Location</label>
+        <input type="text" name="location" id="location" required>
+
+        <label for="total_seats">Total Seats</label>
+        <input type="number" name="total_seats" id="total_seats" min="1" required>
+
+        <label for="tier1_price">Tier 1 Price</label>
+        <input type="number" name="tier1_price" id="tier1_price" value="1000" min="0" required>
+
+        <label for="tier2_price">Tier 2 Price</label>
+        <input type="number" name="tier2_price" id="tier2_price" value="500" min="0" required>
+
+        <label for="tier3_price">Tier 3 Price</label>
+        <input type="number" name="tier3_price" id="tier3_price" value="200" min="0" required>
+
+        <button>Create Event</button>
+    </form>
+
+    <% if (typeof error !== 'undefined') { %>
+        <p><%= error %></p>
+    <% } %>
+</body>
+</html>

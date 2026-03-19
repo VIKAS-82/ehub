@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Events</title>
+</head>
+<body>
+    <h1>My Events</h1>
+    <ul>
+        <% for(let e of events){ %>
+            <li>
+                <strong><%= e.title %></strong> |
+                Date: <%= e.date %> |
+                Time: <%= e.time %> |
+                Location: <%= e.location %> |
+                Seats: <%= e.available_seats %>/<%= e.total_seats %> |
+                Prices: ₹<%= e.tier1_price %> / ₹<%= e.tier2_price %> / ₹<%= e.tier3_price %>
+                <form method="post" action="/delete/<%= e.id %>?_method=DELETE">
+                    <button>Delete Event</button>
+                </form>
+            </li>
+        <% } %>
+    </ul>
+    <a href="/host_home">Return to Home Page</a>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Review Booking</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      /* background: url('https://images.unsplash.com/photo-1515169067865-5387ec356754?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed; */
+      background: url('/images/bgpic_dbms.jpg') center/cover no-repeat;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    .review-container {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(10px);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    h2 {
+      color: #0d6efd;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin: 10px 0;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #198754, #157347);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #157347, #145a35);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="review-container">
+    <h2>Review Your Booking</h2>
+    <p><strong>Event:</strong> <%= eventName %></p>
+    <p><strong>Tier:</strong> <%= tier %></p>
+    <p><strong>Tickets:</strong> <%= qty %></p>
+    <p><strong>Total Price:</strong> ₹<%= totalprice %></p>
+
+    <form method="post" action="/pay">
+      <input type="hidden" name="eventid" value="<%= eventid %>">
+      <input type="hidden" name="tier" value="<%= tier %>">
+      <input type="hidden" name="qty" value="<%= qty %>">
+      <input type="hidden" name="totalprice" value="<%= totalprice %>">
+      <button type="submit">Confirm Payment</button>
+    </form>
+  </div>
+</body>
+</html>

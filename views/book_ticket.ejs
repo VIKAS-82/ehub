@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Ticket</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('/images/bgpic_dbms.jpg') center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    form {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    form:hover {
+      transform: scale(1.01);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 24px;
+      color: #0d6efd;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+      color: #333;
+    }
+
+    select,
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #f9f9f9;
+      font-size: 1rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    select:focus,
+    input[type="number"]:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #198754, #157347);
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #157347, #145a35);
+      transform: translateY(-2px);
+    }
+
+    .error-message {
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #ffe5e5;
+      border-left: 4px solid #ff7b7b;
+      color: #b00020;
+      border-radius: 6px;
+      font-weight: 600;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <form method="POST" action="/book/<%= eventid %>?_method=PATCH" aria-label="Ticket Booking Form">
+    <h1>Book Your Tickets</h1>
+
+    <label for="tier">Choose Tier</label>
+    <select id="tier" name="tier" required aria-required="true">
+      <option value="">-- Select Tier --</option>
+      <option value="tier1">Tier 1</option>
+      <option value="tier2">Tier 2</option>
+      <option value="tier3">Tier 3</option>
+    </select>
+
+    <label for="quantity">Number of Tickets</label>
+    <input
+      type="number"
+      id="quantity"
+      name="quantity"
+      value="1"
+      min="1"
+      max="5"
+      required
+      aria-required="true"
+    >
+
+    <button type="submit">Confirm Booking</button>
+
+    <% if (typeof error !== 'undefined') { %>
+      <div class="error-message"><%= error %></div>
+    <% } %>
+  </form>
+</body>
+</html>

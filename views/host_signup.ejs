@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp</title>
+    <style>
+        /* Global Reset & Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Background styling */
+        body {
+            background-image: url('images/bgpic_dbms.jpg'); /* Make sure path is correct */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* padding so content isn't tight on small screens */
+        }
+
+        /* Container for the form */
+        .form-container {
+            background-color: #ffffff; /* White background for the form */
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #d1d8e0;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: #f9fafb;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+            background-color: #ffffff;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer - link to the login page */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .footer a {
+            color: #007bff;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Create Host Account</h1>
+        <% if (typeof error !== 'undefined') { %>
+            <p style="color: red; text-align: center; margin-bottom: 20px;"><%= error %></p>
+        <% } %>
+        <form method="post" action="/host_signup">
+            <label for="name">Enter your Organization Name</label>
+            <input type="text" name="name" id="name" placeholder="Organization Name">
+            
+            <label for="email">Enter your organization email id</label>
+            <input type="text" name="email" id="email" placeholder="org-mail@example.com">
+            
+            <label for="password">Create a password</label>
+            <input type="password" name="password" id="password" placeholder="Your password">
+            
+            <button>Create Account</button>
+        </form>
+
+        <div class="footer">
+            <p>Already have an account? <a href="/host">Login here</a></p>
+        </div>
+    </div>
+</body>
+</html>
